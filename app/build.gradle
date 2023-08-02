@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
+
 }
 
 android {
@@ -45,6 +46,7 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1'
     implementation 'androidx.navigation:navigation-fragment-ktx:2.6.0'
     implementation 'androidx.navigation:navigation-ui-ktx:2.6.0'
+    implementation 'androidx.core:core-ktx:+'
 
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
@@ -52,4 +54,9 @@ dependencies {
 
     implementation 'com.itextpdf:itextg:5.5.10' // iText library for PDF generation
 
+    implementation 'androidx.room:room-runtime:2.4.0' // Room database library
+    annotationProcessor 'androidx.room:room-compiler:2.4.0' // Annotation processor
+
+
 }
+
