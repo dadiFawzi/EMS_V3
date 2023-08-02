@@ -1,7 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
-
+    id 'kotlin-kapt'
 }
 
 android {
@@ -54,9 +54,11 @@ dependencies {
 
     implementation 'com.itextpdf:itextg:5.5.10' // iText library for PDF generation
 
-    implementation 'androidx.room:room-runtime:2.4.0' // Room database library
-    annotationProcessor 'androidx.room:room-compiler:2.4.0' // Annotation processor
+  //  implementation 'androidx.room:room-runtime:2.4.0' // Room database library
+ //   annotationProcessor 'androidx.room:room-compiler:2.4.0' // Annotation processor
 
-
+    implementation("androidx.room:room-runtime:2.5.1")
+    kapt "androidx.room:room-compiler:2.5.1"
+    kapt "android.arch.persistence.room:compiler:1.1.1"
 }
 

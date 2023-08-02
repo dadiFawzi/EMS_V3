@@ -13,10 +13,12 @@ import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.Toast
+import androidx.room.Room
 import com.example.ems_v3.Main.MainActivity
 import com.example.ems_v3.databinding.ActivityLoginBinding
 
 import com.example.ems_v3.R
+import com.example.ems_v3.database.AppDatabase
 
 class LoginActivity : AppCompatActivity() {
 

@@ -111,7 +111,7 @@ startActivity(intent)
             Customer("John Doe", "New York", 10.5),
             Customer("Jane Smith", "Los Angeles", 8.2),
             Customer("Robert Johnson", "Chicago", 12.7),
-                    Customer("John Doe", "New York", 10.5),
+            Customer("John Doe", "New York", 10.5),
         Customer("Jane Smith", "Los Angeles", 8.2),
         Customer("Robert Johnson", "Chicago", 12.7),
         Customer("John Doe", "New York", 10.5),

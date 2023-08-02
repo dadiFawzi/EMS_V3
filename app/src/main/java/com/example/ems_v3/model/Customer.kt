@@ -12,3 +12,6 @@ data class Customer(
     val city: String,
     val distance: Double
 )
+{
+    constructor(name: String, city: String,distance: Double) : this(0, name, city,distance)
+}

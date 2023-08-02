@@ -1,5 +1,6 @@
 package com.example.ems_v3.Main
 
+import android.app.Application
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -9,13 +10,18 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.room.Room
 import com.example.ems_v3.AddActivity
 import com.example.ems_v3.R
 import com.example.ems_v3.Report.ReportActivity
 import com.example.ems_v3.Report.ReportAdapter
 import com.example.ems_v3.SettingActivity
 import com.example.ems_v3.customer.CustomerActivity
+import com.example.ems_v3.database.AppDatabase
+import com.example.ems_v3.database.UserDao
 import com.example.ems_v3.databinding.ActivityMainBinding
+import com.example.ems_v3.model.Role
+import com.example.ems_v3.model.User
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import java.util.List
 
@@ -30,7 +36,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var settingButton:View
     private lateinit var customerButton:View
 
-
+    lateinit var appDatabase: AppDatabase
     private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,6 +45,25 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         addButton = findViewById(R.id.fab)
        val navView: BottomNavigationView = binding.navView
+
+        //create database
+        appDatabase = Room.databaseBuilder(applicationContext, AppDatabase::class.java, "EMS")
+            .build()
+        println("################# get all user " )
+        Thread {
+            val users = listOf(
+                User(username = "admin", email = "admin@example.com", password = "admin123", photo = "admin.jpg", role = Role.ADMIN),
+                User(username = "backoffice", email = "back@example.com", password = "back123", photo = "back.jpg", role = Role.BACKOFFICE),
+                User(username = "user1", email = "user1@example.com", password = "user123", photo = "user1.jpg", role = Role.USER),
+                User(username = "user2", email = "user2@example.com", password = "user456", photo = "user2.jpg", role = Role.USER)
+            )
+
+            appDatabase.userDao().insertAll(users)
+
+            println(appDatabase.userDao().loadAllUsers().get(0).toString())
+            println("################# get all user " )
+        }.start()
+
 
         //adapter
         val recyclerView: RecyclerView = findViewById(R.id.recyclerViewExpenses)
