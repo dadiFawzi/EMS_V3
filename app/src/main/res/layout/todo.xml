@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- Genaral activity and layout  -->
+<!-- TODO add new client layout and activity -->
+<!-- TODO expenses show and validation after modification  -->
+<!-- TODO user info layout -->
+<!-- TODO make asynchrone update to the app from db for any modification or validation  -->
+<!-- TODO in home dipslay make filter for expenses by month or icons by type for the selected month -->
+<!-- TODO login data verification -->
+
+
+
+
+
+<!-- TODO -->
+<!-- TODO add expense amount to each item in the report layout  -->
+<!-- TODO  fix the expense displaying to dispaly expense type and amount in the list of items -->
+
+
+
+
+
+
+
+
+
+
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+</androidx.constraintlayout.widget.ConstraintLayout>
+

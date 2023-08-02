@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- Expense Date -->
+    <TextView
+        android:id="@+id/textViewExpenseDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Expense Date"
+        android:textSize="16sp"
+        android:textColor="@android:color/black"
+        android:textStyle="bold" />
+
+    <!-- Mission Title -->
+    <TextView
+        android:id="@+id/textViewMissionTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Mission Title"
+        android:textSize="14sp"
+        android:textColor="@android:color/black" />
+
+    <!-- Customer Name -->
+    <TextView
+        android:id="@+id/textViewCustomerName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Customer Name"
+        android:textSize="14sp"
+        android:textColor="@android:color/black" />
+
+    <!-- Last modification -->
+    <TextView
+        android:id="@+id/textViewLastModification"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Last modification"
+        android:textSize="14sp"
+        android:textColor="@android:color/black" />
+
+    <!-- RecyclerView for List of Expenses -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewExpenses"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:nestedScrollingEnabled="false" />
+<LinearLayout
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:layout_gravity="right">
+
+    <!-- Button for validation expense -->
+    <Button
+        android:id="@+id/buttonValidation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:layout_marginRight="20dp"
+        android:text="validate"
+        android:textSize="10dp" />
+
+    <!-- Button for Editing expense -->
+    <Button
+        android:id="@+id/buttonEdit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:layout_marginLeft="20dp"
+        android:text="Edit"
+        android:textSize="10dp" />
+
+
+</LinearLayout>
+
+</LinearLayout>
+
