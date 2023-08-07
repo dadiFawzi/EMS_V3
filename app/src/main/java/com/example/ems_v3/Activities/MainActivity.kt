@@ -20,6 +20,7 @@ import com.example.ems_v3.model.Expense
 import com.example.ems_v3.model.ExpenseType
 import com.example.ems_v3.model.Role
 import com.example.ems_v3.model.User
+import com.example.ems_v3.model.mission.Mission
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import java.util.List
 
@@ -136,11 +137,43 @@ class MainActivity : AppCompatActivity() {
                     comment = "Miscellaneous expenses"
                 )
             )
+            val sampleMissions = listOf(
+                Mission(
+                    missionTitle = "Client Meeting",
+                    missionComment = "Discuss project requirements with the client.",
+                    idUser = 1,
+                    idExpense = 3
+                ),
+                Mission(
+                    missionTitle = "Market Research",
+                    missionComment = "Conduct market research for new product launch.",
+                    idUser = 2,
+                    idExpense = 2
+                ),
+                Mission(
+                    missionTitle = "Training Session",
+                    missionComment = "Lead a training session for new employees.",
+                    idUser = 3,
+                    idExpense = 1
+                ),
+                Mission(
+                    missionTitle = "Product Presentation",
+                    missionComment = "Present our latest product to potential investors.",
+                    idUser = 1,
+                    idExpense = 4
+                ),
+                Mission(
+                    missionTitle = "Team Building",
+                    missionComment = "Organize team building activities for the department.",
+                    idUser = 4,
+                    idExpense = 5
+                )
+            )
 
             appDatabase.userDao().insertAll(users)
-            appDatabase.customerDao().insertAll(sampleCustomers)
-            appDatabase.expenseDao().insertAll(sampleExpenses)
-
+            appDatabase.customerDao().insertAllCustomer(sampleCustomers)
+          appDatabase.expenseDao().insertAllExpense(sampleExpenses)
+appDatabase.missionDao().insertAll(sampleMissions)
 
             println(appDatabase.userDao().loadAllUsers().get(0).toString())
             println("################# get all user " )

@@ -10,10 +10,10 @@ import com.example.ems_v3.model.User
 @Dao
 interface UserDao {
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.ABORT)
      fun insert(user: User)
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.ABORT)
      fun insertAll(users: List<User>)
 
 
