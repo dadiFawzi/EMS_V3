@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -13,9 +13,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Expense Date"
-        android:textSize="16sp"
         android:textColor="@android:color/black"
+        android:textSize="16sp"
         android:textStyle="bold" />
+    />
 
     <!-- Mission Title -->
     <TextView
@@ -23,8 +24,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Mission Title"
-        android:textSize="14sp"
-        android:textColor="@android:color/black" />
+        android:textColor="@android:color/black"
+        android:textSize="14sp" />
 
     <!-- Customer Name -->
     <TextView
@@ -32,8 +33,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Customer Name"
-        android:textSize="14sp"
-        android:textColor="@android:color/black" />
+        android:textColor="@android:color/black"
+        android:textSize="14sp" />
 
     <!-- Last modification -->
     <TextView
@@ -41,8 +42,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Last modification"
-        android:textSize="14sp"
-        android:textColor="@android:color/black" />
+        android:textColor="@android:color/black"
+        android:textSize="14sp" />
 
     <!-- RecyclerView for List of Expenses -->
     <androidx.recyclerview.widget.RecyclerView
@@ -51,34 +52,47 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:nestedScrollingEnabled="false" />
-<LinearLayout
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:layout_gravity="right">
 
-    <!-- Button for validation expense -->
-    <Button
-        android:id="@+id/buttonValidation"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="end"
-        android:layout_marginRight="20dp"
-        android:text="validate"
-        android:textSize="10dp" />
-
-    <!-- Button for Editing expense -->
-    <Button
-        android:id="@+id/buttonEdit"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end"
-        android:layout_marginLeft="20dp"
-        android:text="Edit"
-        android:textSize="10dp" />
+        android:layout_gravity="right"
+        android:orientation="horizontal">
 
 
-</LinearLayout>
+        <ImageButton
+            android:id="@+id/buttonValidation"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginBottom="15dp"
+            android:background="#00FFFFFF"
+            android:src="@drawable/accept"
+          />
+
+        <!-- Button for Editing expense -->
+        <ImageButton
+            android:id="@+id/buttonEdit"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_gravity="end"
+            android:layout_marginLeft="20dp"
+            android:background="#00FFFFFF"
+            android:src="@drawable/edit"
+            android:textSize="10dp" />
+
+        <ImageButton
+            android:id="@+id/buttondelete"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_gravity="end"
+            android:layout_marginLeft="20dp"
+            android:src="@drawable/delete"
+            android:background="#00FFFFFF"
+            android:textSize="10dp" />
+        />
+
+
+    </LinearLayout>
 
 </LinearLayout>
 

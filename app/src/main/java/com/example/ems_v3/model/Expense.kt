@@ -4,7 +4,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 
-@Entity(tableName ="expense")
+@Entity(tableName ="expense_table")
 data class Expense (
 
     @PrimaryKey(autoGenerate = true)
@@ -14,3 +14,7 @@ data class Expense (
     val comment : String,
 
     )
+/*
+{
+    constructor(expenseType: ExpenseType  ,ammount: Float,comment: String) : this(0, expenseType,ammount,comment)
+}*/

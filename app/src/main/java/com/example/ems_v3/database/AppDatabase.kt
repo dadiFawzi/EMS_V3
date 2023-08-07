@@ -8,8 +8,9 @@ import com.example.ems_v3.model.mission.Mission
 @Database(entities = [User::class,Mission::class], version = 1)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun userDao(): UserDao
+    abstract fun customerDao(): CustomerDao
     abstract fun missionDao() : MissionDao
 
-
+    abstract  fun expenseDao() : ExpenseDao
 
 }

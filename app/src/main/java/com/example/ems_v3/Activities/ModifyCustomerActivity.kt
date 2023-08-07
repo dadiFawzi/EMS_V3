@@ -1,4 +1,4 @@
-package com.example.ems_v3.customer
+package com.example.ems_v3.Activities
 
 import android.app.Activity
 import android.content.Intent
@@ -7,10 +7,7 @@ import android.os.Bundle
 import android.view.MenuItem
 import android.widget.Button
 import android.widget.EditText
-import com.example.ems_v3.Main.MainActivity
 import com.example.ems_v3.R
-import com.example.ems_v3.Report.ReportActivity
-import com.example.ems_v3.SettingActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationBarView
 

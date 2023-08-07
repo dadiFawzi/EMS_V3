@@ -1,4 +1,4 @@
-package com.example.ems_v3.Report
+package com.example.ems_v3.Activities
 
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -7,6 +7,8 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Environment
 import android.view.MenuItem
+import android.widget.LinearLayout
+import android.widget.TextView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationBarView
 import com.itextpdf.text.Document
@@ -16,10 +18,9 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.ems_v3.Main.MainActivity
 import com.example.ems_v3.R
-import com.example.ems_v3.SettingActivity
-import com.example.ems_v3.customer.CustomerActivity
+import com.example.ems_v3.Report.ExpenseItem
+import com.example.ems_v3.Report.ReportAdapter
 import com.itextpdf.text.pdf.PdfWriter
 import java.io.FileOutputStream
 import java.io.OutputStream
@@ -39,6 +40,51 @@ class ReportActivity : AppCompatActivity() {
         val adapter = ReportAdapter(dataList as List<ExpenseItem>)
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(this)
+
+        // to display months in the top of the main view
+        val monthsContainer: LinearLayout = findViewById(R.id.monthsContainer)
+        // Get the array of months from resources
+        val monthsArray = resources.getStringArray(R.array.months_array)
+
+
+        // Create TextView elements for each month and add to the LinearLayout
+        for (month in monthsArray) {
+            val textViewMonth = TextView(this)
+            textViewMonth.text = month
+            textViewMonth.textSize = 20f
+            textViewMonth.setPadding(8, 0, 8, 0)
+            textViewMonth.isClickable = true
+            textViewMonth.isFocusable = true
+            textViewMonth.setTextColor(resources.getColor(android.R.color.black, null))
+            monthsContainer.addView(textViewMonth)
+        }
+
+        // Set click listeners for each TextView to handle month selection
+        for (i in 0 until monthsContainer.childCount) {
+            val textViewMonth = monthsContainer.getChildAt(i) as TextView
+            textViewMonth.setOnClickListener {
+                    v ->
+                // Deselect all items
+                for (j in 0 until monthsContainer.childCount) {
+                    monthsContainer.getChildAt(j).isSelected = false
+                    monthsContainer.getChildAt(j).setBackgroundColor(resources.getColor(R.color.white))
+                }
+                // Select the clicked item
+                v.isSelected = true
+                v.setBackgroundColor(resources.getColor(R.color.selected_month))
+
+
+                // Perform actions based on the selected item if needed
+                // Handle the click event for month selection
+                // You can update the RecyclerView data here based on the selected month
+                // For example, filter the data for the selected month and update the adapter
+                // recyclerViewExpenses.adapter.notifyDataSetChanged()
+
+
+            }
+        }
+
+
 
 
       /*  exportButton.setOnClickListener {
@@ -118,6 +164,12 @@ class ReportActivity : AppCompatActivity() {
                 return false
             }
         })
+    }
+
+    override fun onRestart() {
+        super.onRestart()
+        val bottomNavigationView = findViewById<BottomNavigationView>(R.id.nav_view)
+        bottomNavigationView.selectedItemId = R.id.navigation_report
     }
 
     private fun getListOfItems(): Any {

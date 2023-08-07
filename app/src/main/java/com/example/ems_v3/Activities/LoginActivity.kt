@@ -1,4 +1,4 @@
-package com.example.ems_v3.ui.login
+package com.example.ems_v3.Activities
 
 import android.app.Activity
 import android.content.Intent
@@ -13,12 +13,12 @@ import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.Toast
-import androidx.room.Room
-import com.example.ems_v3.Main.MainActivity
 import com.example.ems_v3.databinding.ActivityLoginBinding
 
 import com.example.ems_v3.R
-import com.example.ems_v3.database.AppDatabase
+import com.example.ems_v3.ui.login.LoggedInUserView
+import com.example.ems_v3.ui.login.LoginViewModel
+import com.example.ems_v3.ui.login.LoginViewModelFactory
 
 class LoginActivity : AppCompatActivity() {
 

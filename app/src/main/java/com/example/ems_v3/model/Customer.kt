@@ -1,6 +1,7 @@
 package com.example.ems_v3.model
 
 import androidx.room.Entity
+import androidx.room.Ignore
 import androidx.room.PrimaryKey
 
 
@@ -12,6 +13,8 @@ data class Customer(
     val city: String,
     val distance: Double
 )
+
 {
-    constructor(name: String, city: String,distance: Double) : this(0, name, city,distance)
+@Ignore
+constructor(name: String,city: String,distance: Double) : this(0, name,city,distance)
 }

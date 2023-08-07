@@ -1,4 +1,4 @@
-package com.example.ems_v3.customer
+package com.example.ems_v3.Activities
 
 import android.content.Intent
 import android.os.Bundle
@@ -6,20 +6,12 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat.startActivityForResult
-import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.ems_v3.AddActivity
-import com.example.ems_v3.Main.MainActivity
 import com.example.ems_v3.R
-import com.example.ems_v3.Report.ReportActivity
-import com.example.ems_v3.SettingActivity
 import com.example.ems_v3.model.Customer
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -143,7 +135,15 @@ startActivity(intent)
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = customerAdapter
     }
+
+    override fun onRestart() {
+        super.onRestart()
+        val bottomNavigationView = findViewById<BottomNavigationView>(R.id.nav_view)
+        bottomNavigationView.selectedItemId = R.id.navigation_client
+    }
 }
+
+
 
 
 

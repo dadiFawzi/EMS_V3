@@ -1,12 +1,10 @@
-package com.example.ems_v3
+package com.example.ems_v3.Activities
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MenuItem
-import com.example.ems_v3.Main.MainActivity
-import com.example.ems_v3.Report.ReportActivity
-import com.example.ems_v3.customer.CustomerActivity
+import com.example.ems_v3.R
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationBarView
 
@@ -22,7 +20,7 @@ class SettingActivity : AppCompatActivity() {
         bottomNavigationView.setOnItemSelectedListener (object : NavigationBarView.OnItemSelectedListener {
             override fun onNavigationItemSelected(item: MenuItem): Boolean {
                 when (item.itemId) {
-                    R.id.navigation_client-> {
+                    R.id.navigation_client -> {
                         // Start Button1Activity when Button 1 is clicked
                         val intent = Intent(this@SettingActivity, CustomerActivity::class.java)
                         startActivity(intent)
@@ -62,6 +60,12 @@ class SettingActivity : AppCompatActivity() {
 
 
 
+    }
+
+    override fun onRestart() {
+        super.onRestart()
+        val bottomNavigationView = findViewById<BottomNavigationView>(R.id.nav_view)
+        bottomNavigationView.selectedItemId = R.id.navigation_user
     }
 
 

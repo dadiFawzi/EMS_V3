@@ -5,17 +5,18 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.example.ems_v3.model.Expense
-import com.example.ems_v3.model.mission.Mission
+
 
 @Dao
-interface MissionDao {
+interface ExpenseDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(mission: Mission)
+    fun insert(expense: Expense)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertAll(customers: List<Mission>)
+    fun insertAll(expense: List<Expense>)
 
+ /*   @Query("SELECT * FROM expense_table")
+    fun loadAllExpenses(): Array<Expense>
 
-    @Query("SELECT * FROM mission_table")
-    fun loadAllMissions(): Array<Mission>
+*/
 }

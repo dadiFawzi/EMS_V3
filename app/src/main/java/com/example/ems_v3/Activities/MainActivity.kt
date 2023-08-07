@@ -1,6 +1,5 @@
-package com.example.ems_v3.Main
+package com.example.ems_v3.Activities
 
-import android.app.Application
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -11,15 +10,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.room.Room
-import com.example.ems_v3.AddActivity
 import com.example.ems_v3.R
-import com.example.ems_v3.Report.ReportActivity
-import com.example.ems_v3.Report.ReportAdapter
-import com.example.ems_v3.SettingActivity
-import com.example.ems_v3.customer.CustomerActivity
+import com.example.ems_v3.Main.ExpenseItem
+import com.example.ems_v3.Main.HomeAdapter
 import com.example.ems_v3.database.AppDatabase
-import com.example.ems_v3.database.UserDao
 import com.example.ems_v3.databinding.ActivityMainBinding
+import com.example.ems_v3.model.Customer
+import com.example.ems_v3.model.Expense
+import com.example.ems_v3.model.ExpenseType
 import com.example.ems_v3.model.Role
 import com.example.ems_v3.model.User
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -36,7 +34,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var settingButton:View
     private lateinit var customerButton:View
 
-    lateinit var appDatabase: AppDatabase
+
     private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,18 +45,102 @@ class MainActivity : AppCompatActivity() {
        val navView: BottomNavigationView = binding.navView
 
         //create database
-        appDatabase = Room.databaseBuilder(applicationContext, AppDatabase::class.java, "EMS")
+        var appDatabase: AppDatabase =
+            Room.databaseBuilder(applicationContext, AppDatabase::class.java, "EMS")
             .build()
         println("################# get all user " )
         Thread {
+
             val users = listOf(
                 User(username = "admin", email = "admin@example.com", password = "admin123", photo = "admin.jpg", role = Role.ADMIN),
                 User(username = "backoffice", email = "back@example.com", password = "back123", photo = "back.jpg", role = Role.BACKOFFICE),
                 User(username = "user1", email = "user1@example.com", password = "user123", photo = "user1.jpg", role = Role.USER),
                 User(username = "user2", email = "user2@example.com", password = "user456", photo = "user2.jpg", role = Role.USER)
             )
+            val sampleCustomers = listOf(
+                Customer(
+                    name = "John Smith",
+                    city = "New York",
+                    distance = 10.5
+                ),
+                Customer(
+                    name = "Alice Johnson",
+                    city = "Los Angeles",
+                    distance = 8.2
+                ),
+                Customer(
+                    name = "Robert Brown",
+                    city = "Chicago",
+                    distance = 5.0
+                ),
+                Customer(
+                    name = "Emily Davis",
+                    city = "Houston",
+                    distance = 12.7
+                ),
+                Customer(
+                    name = "Michael Wilson",
+                    city = "Miami",
+                    distance = 6.8
+                )
+            )
+            val sampleExpenses = listOf(
+                Expense(
+                    expenseType = ExpenseType.restaurent,
+                    ammount = 25.0f,
+                    comment = "Lunch at the restaurant"
+                ),
+                Expense(
+                    expenseType = ExpenseType.taxi,
+                    ammount = 10.5f,
+                    comment = "Bus fare"
+                ),
+                Expense(
+                    expenseType = ExpenseType.other,
+                    ammount = 15.75f,
+                    comment = "Movie night"
+                ),
+                Expense(
+                    expenseType = ExpenseType.other,
+                    ammount = 50.0f,
+                    comment = "Weekly grocery shopping"
+                ),
+                Expense(
+                    expenseType = ExpenseType.other,
+                    ammount = 75.0f,
+                    comment = "Electricity bill"
+                ),
+                Expense(
+                    expenseType = ExpenseType.rentCar,
+                    ammount = 200.0f,
+                    comment = "Weekend getaway"
+                ),
+                Expense(
+                    expenseType = ExpenseType.other,
+                    ammount = 30.0f,
+                    comment = "Doctor's visit"
+                ),
+                Expense(
+                    expenseType = ExpenseType.hotel,
+                    ammount = 60.0f,
+                    comment = "New pair of shoes"
+                ),
+                Expense(
+                    expenseType = ExpenseType.fuel,
+                    ammount = 800.0f,
+                    comment = "Monthly rent"
+                ),
+                Expense(
+                    expenseType = ExpenseType.fuel,
+                    ammount = 50.0f,
+                    comment = "Miscellaneous expenses"
+                )
+            )
 
             appDatabase.userDao().insertAll(users)
+            appDatabase.customerDao().insertAll(sampleCustomers)
+            appDatabase.expenseDao().insertAll(sampleExpenses)
+
 
             println(appDatabase.userDao().loadAllUsers().get(0).toString())
             println("################# get all user " )
@@ -86,7 +168,7 @@ class MainActivity : AppCompatActivity() {
         for (month in monthsArray) {
             val textViewMonth = TextView(this)
             textViewMonth.text = month
-            textViewMonth.textSize = 16f
+            textViewMonth.textSize = 20f
             textViewMonth.setPadding(8, 0, 8, 0)
             textViewMonth.isClickable = true
             textViewMonth.isFocusable = true
@@ -151,6 +233,11 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    override fun onRestart() {
+        super.onRestart()
+        val bottomNavigationView = findViewById<BottomNavigationView>(R.id.nav_view)
+        bottomNavigationView.selectedItemId = R.id.navigation_home
+    }
     private fun getListOfItems(): Any {
         val expenses1 = listOf(
             Pair("Expense Type 3", 70.0),
