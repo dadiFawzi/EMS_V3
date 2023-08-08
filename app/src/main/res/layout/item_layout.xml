@@ -44,11 +44,26 @@
         android:nestedScrollingEnabled="false" />
 
     <!-- Button for Printing Report -->
-    <Button
+    <ImageButton
+        android:minWidth="40dp"
+        android:minHeight="40dp"
         android:id="@+id/buttonPrint"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
         android:layout_gravity="end"
-        android:text="Print Report" />
+        android:text="Print Report"
+        android:src="@drawable/print"
+        android:background="@drawable/month_button"
+        android:clickable="true"
+
+        />
+
+    <View
+        android:id="@+id/divider5"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="?android:attr/listDivider" />
 
 </LinearLayout>

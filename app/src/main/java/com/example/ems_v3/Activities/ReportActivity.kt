@@ -7,6 +7,9 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Environment
 import android.view.MenuItem
+import android.widget.Button
+import android.widget.HorizontalScrollView
+import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.TextView
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -15,19 +18,23 @@ import com.itextpdf.text.Document
 import com.itextpdf.text.PageSize
 import java.io.File
 import android.widget.Toast
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.ems_v3.R
 import com.example.ems_v3.Report.ExpenseItem
+import com.example.ems_v3.Report.OnButtonClickListener
 import com.example.ems_v3.Report.ReportAdapter
 import com.itextpdf.text.pdf.PdfWriter
 import java.io.FileOutputStream
 import java.io.OutputStream
+import java.util.Calendar
 import java.util.List
+import kotlin.concurrent.thread
 
 
-class ReportActivity : AppCompatActivity() {
+class ReportActivity : AppCompatActivity(), OnButtonClickListener {
 
     private val PERMISSION_REQUEST_CODE = 123
 
@@ -35,11 +42,16 @@ class ReportActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.report)
 
+        val scrollView = findViewById<HorizontalScrollView>(R.id.monthsScrollView)
+
         val recyclerView: RecyclerView = findViewById(R.id.recyclerView)
         val dataList = getListOfItems() // Update this function to add more items
-        val adapter = ReportAdapter(dataList as List<ExpenseItem>)
+        val adapter = ReportAdapter(dataList as List<ExpenseItem>,this)
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(this)
+
+        val print= recyclerView.findViewById<ImageButton>(R.id.buttonPrint)
+
 
         // to display months in the top of the main view
         val monthsContainer: LinearLayout = findViewById(R.id.monthsContainer)
@@ -47,31 +59,58 @@ class ReportActivity : AppCompatActivity() {
         val monthsArray = resources.getStringArray(R.array.months_array)
 
 
-        // Create TextView elements for each month and add to the LinearLayout
+        var m = 0
         for (month in monthsArray) {
-            val textViewMonth = TextView(this)
+            m++
+            val  textViewMonth = Button(this)
+
             textViewMonth.text = month
-            textViewMonth.textSize = 20f
-            textViewMonth.setPadding(8, 0, 8, 0)
+
+            textViewMonth.textSize = 15f
+            textViewMonth.setPadding(0, 0, 0, 0)
             textViewMonth.isClickable = true
             textViewMonth.isFocusable = true
-            textViewMonth.setTextColor(resources.getColor(android.R.color.black, null))
+            textViewMonth.setBackgroundResource(R.drawable.month_button)
             monthsContainer.addView(textViewMonth)
+
+
+
+            //set default month  is current month
+            val calendar = Calendar.getInstance()
+            val currentMonth = calendar.get(Calendar.MONTH)+1
+            if (currentMonth == m) {
+                textViewMonth.isSelected = true
+                //  v.setBackgroundColor(resources.getColor(R.color.selected_month))
+                textViewMonth.setBackgroundResource(R.drawable.month_button_selected)
+
+            }
         }
 
         // Set click listeners for each TextView to handle month selection
         for (i in 0 until monthsContainer.childCount) {
-            val textViewMonth = monthsContainer.getChildAt(i) as TextView
+            val textViewMonth = monthsContainer.getChildAt(i) as Button
+
+
             textViewMonth.setOnClickListener {
                     v ->
                 // Deselect all items
                 for (j in 0 until monthsContainer.childCount) {
                     monthsContainer.getChildAt(j).isSelected = false
-                    monthsContainer.getChildAt(j).setBackgroundColor(resources.getColor(R.color.white))
+                    monthsContainer.getChildAt(j).setBackgroundResource(R.drawable.month_button)
                 }
                 // Select the clicked item
                 v.isSelected = true
-                v.setBackgroundColor(resources.getColor(R.color.selected_month))
+                //  v.setBackgroundColor(resources.getColor(R.color.selected_month))
+                v.setBackgroundResource(R.drawable.month_button_selected)
+
+                val position = monthsContainer.childCount
+
+                // Scroll the ScrollView to the target position
+                //  scrollView.smoothScrollTo( (i-1)*textViewMonth.width,0)
+                scrollView.smoothScrollTo( (i-1)*textViewMonth.width,0)
+
+
+
 
 
                 // Perform actions based on the selected item if needed
@@ -83,22 +122,6 @@ class ReportActivity : AppCompatActivity() {
 
             }
         }
-
-
-
-
-      /*  exportButton.setOnClickListener {
-            if (isWriteStoragePermissionGranted()) {
-                exportToPDF()
-            } else {
-                ActivityCompat.requestPermissions(
-                    this,
-                    arrayOf(android.Manifest.permission.WRITE_EXTERNAL_STORAGE),
-                    PERMISSION_REQUEST_CODE
-                )
-            }
-        }*/
-
 
     fun onRequestPermissionsResult(
         requestCode: Int,
@@ -260,10 +283,8 @@ class ReportActivity : AppCompatActivity() {
             val outputStream: OutputStream = FileOutputStream(file)
             PdfWriter.getInstance(document, outputStream)
             document.open()
-
             // Add content to the PDF here
             // For example, you can add text, images, tables, etc.
-
             // For this example, let's add a simple text to the PDF
             val paragraph = com.itextpdf.text.Paragraph("Hello, this is a sample PDF.")
             document.add(paragraph)
@@ -276,5 +297,26 @@ class ReportActivity : AppCompatActivity() {
         }
 
 
+    }
+
+    override fun onButtonClick(position: Int) {
+
+    if (isWriteStoragePermissionGranted()) {
+    exportToPDF()
+} else {
+    ActivityCompat.requestPermissions(
+        this,
+        arrayOf(android.Manifest.permission.WRITE_EXTERNAL_STORAGE),
+        PERMISSION_REQUEST_CODE
+    )
+}
+        val intent = Intent(this@ReportActivity, ReportActivity::class.java)
+        startActivity(intent)
+
+
+
+
+
+        TODO("Not yet implemented")
     }
 }

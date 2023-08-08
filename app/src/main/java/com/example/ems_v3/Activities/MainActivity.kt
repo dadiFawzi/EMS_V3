@@ -2,11 +2,17 @@ package com.example.ems_v3.Activities
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.TypedValue
 import android.view.View
+import android.view.ViewGroup
+import android.widget.Button
+import android.widget.HorizontalScrollView
 import android.widget.LinearLayout
+import android.widget.ScrollView
 import android.widget.TextView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.marginRight
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.room.Room
@@ -22,6 +28,7 @@ import com.example.ems_v3.model.Role
 import com.example.ems_v3.model.User
 import com.example.ems_v3.model.mission.Mission
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import java.util.Calendar
 import java.util.List
 
 class MainActivity : AppCompatActivity() {
@@ -49,7 +56,8 @@ class MainActivity : AppCompatActivity() {
         var appDatabase: AppDatabase =
             Room.databaseBuilder(applicationContext, AppDatabase::class.java, "EMS")
             .build()
-        println("################# get all user " )
+
+// Thread to insert sample data into DB
         Thread {
 
             val users = listOf(
@@ -169,11 +177,10 @@ class MainActivity : AppCompatActivity() {
                     idExpense = 5
                 )
             )
-
             appDatabase.userDao().insertAll(users)
             appDatabase.customerDao().insertAllCustomer(sampleCustomers)
-          appDatabase.expenseDao().insertAllExpense(sampleExpenses)
-appDatabase.missionDao().insertAll(sampleMissions)
+            appDatabase.expenseDao().insertAllExpense(sampleExpenses)
+            appDatabase.missionDao().insertAll(sampleMissions)
 
             println(appDatabase.userDao().loadAllUsers().get(0).toString())
             println("################# get all user " )
@@ -182,6 +189,8 @@ appDatabase.missionDao().insertAll(sampleMissions)
 
         //adapter
         val recyclerView: RecyclerView = findViewById(R.id.recyclerViewExpenses)
+        val scrollView = findViewById<HorizontalScrollView>(R.id.monthsScrollView)
+
         val dataList = getListOfItems() // Update this function to add more items
         val adapter = HomeAdapter(dataList as List<ExpenseItem>)
         recyclerView.adapter = adapter
@@ -198,30 +207,59 @@ appDatabase.missionDao().insertAll(sampleMissions)
 
 
         // Create TextView elements for each month and add to the LinearLayout
+        var m = 0
         for (month in monthsArray) {
-            val textViewMonth = TextView(this)
+              m++
+            val  textViewMonth = Button(this)
+
             textViewMonth.text = month
-            textViewMonth.textSize = 20f
-            textViewMonth.setPadding(8, 0, 8, 0)
+
+            textViewMonth.textSize = 15f
+            textViewMonth.setPadding(0, 0, 0, 0)
+
             textViewMonth.isClickable = true
             textViewMonth.isFocusable = true
-            textViewMonth.setTextColor(resources.getColor(android.R.color.black, null))
-            monthsContainer.addView(textViewMonth)
+            textViewMonth.setBackgroundResource(R.drawable.month_button)
+                        monthsContainer.addView(textViewMonth)
+
+
+
+            //set default month  is current month
+            val calendar = Calendar.getInstance()
+            val currentMonth = calendar.get(Calendar.MONTH)+1
+            if (currentMonth == m) {
+                textViewMonth.isSelected = true
+                //  v.setBackgroundColor(resources.getColor(R.color.selected_month))
+                textViewMonth.setBackgroundResource(R.drawable.month_button_selected)
+
+            }
         }
 
         // Set click listeners for each TextView to handle month selection
         for (i in 0 until monthsContainer.childCount) {
-            val textViewMonth = monthsContainer.getChildAt(i) as TextView
+            val textViewMonth = monthsContainer.getChildAt(i) as Button
+
+
             textViewMonth.setOnClickListener {
                     v ->
                 // Deselect all items
                 for (j in 0 until monthsContainer.childCount) {
                     monthsContainer.getChildAt(j).isSelected = false
-                    monthsContainer.getChildAt(j).setBackgroundColor(resources.getColor(R.color.white))
+                    monthsContainer.getChildAt(j).setBackgroundResource(R.drawable.month_button)
                 }
                 // Select the clicked item
                 v.isSelected = true
-                v.setBackgroundColor(resources.getColor(R.color.selected_month))
+                //  v.setBackgroundColor(resources.getColor(R.color.selected_month))
+                v.setBackgroundResource(R.drawable.month_button_selected)
+
+                val position = monthsContainer.childCount
+
+                // Scroll the ScrollView to the target position
+              //  scrollView.smoothScrollTo( (i-1)*textViewMonth.width,0)
+                scrollView.smoothScrollTo( (i-1)*textViewMonth.width,0)
+
+
+
 
 
                 // Perform actions based on the selected item if needed

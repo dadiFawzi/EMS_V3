@@ -7,11 +7,8 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#F1FFFFFF</color>
-
-
     <color name="validated_expense">#C444C2F4</color>
     <color name="non_validated_expense">#DBD5E1D5</color>
-
-
     <color name="selected_month">#00C5AA</color>
+
 </resources>

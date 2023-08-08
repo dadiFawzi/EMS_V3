@@ -5,6 +5,7 @@ package com.example.ems_v3.Report;
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -13,10 +14,10 @@ import com.example.ems_v3.R
 
 import java.util.List;
 
-class ReportAdapter(private val dataList: List<com.example.ems_v3.Report.ExpenseItem>) :
+class ReportAdapter(private val dataList: List<com.example.ems_v3.Report.ExpenseItem>,private val buttonClickListener: OnButtonClickListener) :
     RecyclerView.Adapter<ReportAdapter.ViewHolder>() {
 
-    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+  inner  class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
 
         val recyclerViewExpenses: RecyclerView = itemView.findViewById(R.id.recyclerViewExpenses)
@@ -24,6 +25,19 @@ class ReportAdapter(private val dataList: List<com.example.ems_v3.Report.Expense
         val textViewMissionTitle: TextView = itemView.findViewById(R.id.textViewMissionTitle)
         val textViewExpenseDate: TextView = itemView.findViewById(R.id.textViewExpenseDate)
 //        val printButton: Button = itemView.findViewById(R.id.PrintButton)
+val button: ImageButton = itemView.findViewById(R.id.buttonPrint)
+
+        init {
+            button.setOnClickListener {
+                val position = adapterPosition
+                if (position != RecyclerView.NO_POSITION) {
+                    buttonClickListener.onButtonClick(position)
+
+                }
+            }
+        }
+
+
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -101,6 +115,12 @@ class ReportAdapter(private val dataList: List<com.example.ems_v3.Report.Expense
 
 
     }
+}
+
+
+
+interface OnButtonClickListener {
+    fun onButtonClick(position: Int)
 }
 
 
