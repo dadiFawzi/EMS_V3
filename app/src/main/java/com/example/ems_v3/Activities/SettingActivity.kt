@@ -3,6 +3,8 @@ package com.example.ems_v3.Activities
 import android.app.Activity
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
@@ -19,6 +21,8 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationBarView
 import java.io.ByteArrayOutputStream
+import java.io.File
+import java.io.FileOutputStream
 import kotlin.concurrent.thread
 
 class SettingActivity : AppCompatActivity() {
@@ -28,7 +32,7 @@ class SettingActivity : AppCompatActivity() {
     private  lateinit var  modifypicturebutton : FloatingActionButton
     private val PICK_IMAGE_REQUEST = 1 // Request code for gallery picker
     private lateinit var appDatabase: AppDatabase // Initialize your database
-
+private  lateinit var  targetFile : File
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -87,43 +91,61 @@ class SettingActivity : AppCompatActivity() {
     onModifyProfileClick(profileImageView)
 }
 
+        profileImageView.setOnClickListener {
+            val imageUri = Uri.fromFile(targetFile).toString()
+            val intent = Intent(this, FullScreenImageActivity::class.java)
+            intent.putExtra("imageUri", imageUri)
+            startActivity(intent)
+        }
+
+
          }
+
+
+
+
     fun onModifyProfileClick(view: View) {
         val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
         startActivityForResult(intent, PICK_IMAGE_REQUEST)
     }
 
-    override  fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null) {
             val imageUri = data.data
-            profileImageView.setImageURI(imageUri)
-
-            // Convert image to Base64-encoded string
-            val imageBitmap = MediaStore.Images.Media.getBitmap(contentResolver, imageUri)
-            val imageByteArray = bitmapToByteArray(imageBitmap)
-            val base64Image = byteArrayToBase64(imageByteArray)
-
-         thread {    // Store the Base64-encoded image in the database
-             val userDao = appDatabase.userDao()
-             val user: User
-             user = userDao.getUserById(1)!! // Replace with the actual user ID
-             user.photo = base64Image
-             userDao.updateUser(user)
-
-         }
+            imageUri?.let { uri ->
+                copyImageAndGenerateThumbnail(uri)
+            }
         }
     }
-    private fun bitmapToByteArray(bitmap: Bitmap): ByteArray {
-        val outputStream = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
-        return outputStream.toByteArray()
+
+    private fun copyImageAndGenerateThumbnail(imageUri: Uri) {
+        val inputStream = contentResolver.openInputStream(imageUri)
+        val targetDirectory = File(filesDir, "profile_images")
+        targetDirectory.mkdirs()
+         targetFile = File(targetDirectory, "profile_picture.jpg")
+
+        inputStream?.use { input ->
+            FileOutputStream(targetFile).use { output ->
+                input.copyTo(output)
+            }
+        }
+
+        val thumbnailBitmap = createThumbnail(targetFile)
+        val thumbnailFile = File(targetDirectory, "thumbnail.jpg")
+        thumbnailBitmap?.compress(Bitmap.CompressFormat.JPEG, 90, FileOutputStream(thumbnailFile))
+
+        // Update UI with the new thumbnail
+        profileImageView.setImageBitmap(thumbnailBitmap)
     }
 
-    private fun byteArrayToBase64(byteArray: ByteArray): String {
-        return android.util.Base64.encodeToString(byteArray, android.util.Base64.DEFAULT)
+    private fun createThumbnail(imageFile: File): Bitmap? {
+        val options = BitmapFactory.Options()
+        options.inSampleSize = 4 // Adjust the sample size as needed
+        return BitmapFactory.decodeFile(imageFile.absolutePath, options)
     }
+
 
 
 }

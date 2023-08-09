@@ -23,6 +23,10 @@
         <activity
             android:name=".Activities.ModifyCustomerActivity"
             android:exported="false" />
+
+        <activity
+            android:name=".Activities.FullScreenImageActivity"
+            android:exported="false" />
         <activity
             android:name=".Activities.LoginActivity"
             android:exported="true"
