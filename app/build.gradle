@@ -54,6 +54,8 @@ dependencies {
 
     implementation 'com.itextpdf:itextg:5.5.10' // iText library for PDF generation
 
+    implementation "com.squareup.retrofit2:retrofit:2.9.0"
+    implementation "com.squareup.retrofit2:converter-gson:2.9.0"
   //  implementation 'androidx.room:room-runtime:2.4.0' // Room database library
  //   annotationProcessor 'androidx.room:room-compiler:2.4.0' // Annotation processor
 
