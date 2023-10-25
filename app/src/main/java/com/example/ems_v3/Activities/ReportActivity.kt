@@ -142,7 +142,9 @@ class ReportActivity : AppCompatActivity(), OnButtonClickListener {
 
 
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.nav_view)
+/*
         bottomNavigationView.selectedItemId = R.id.navigation_report
+*/
 
 
         bottomNavigationView.setOnItemSelectedListener (object : NavigationBarView.OnItemSelectedListener {
@@ -166,14 +168,14 @@ class ReportActivity : AppCompatActivity(), OnButtonClickListener {
                         return true
                     }
 
-                    R.id.navigation_report -> {
+                   /* R.id.navigation_report -> {
                         // Start Button2Activity when Button 2 is clicked
                         val intent = Intent(this@ReportActivity, ReportActivity::class.java)
                         startActivity(intent)
                         // Set the clicked item as selected
                      //   bottomNavigationView.selectedItemId = R.id.navigation_report
                         return true
-                    }
+                    }*/
 
                     R.id.navigation_user -> {
                         // Start Button2Activity when Button 2 is clicked
@@ -192,7 +194,9 @@ class ReportActivity : AppCompatActivity(), OnButtonClickListener {
     override fun onRestart() {
         super.onRestart()
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.nav_view)
+/*
         bottomNavigationView.selectedItemId = R.id.navigation_report
+*/
     }
 
     private fun getListOfItems(): Any {
@@ -312,10 +316,6 @@ class ReportActivity : AppCompatActivity(), OnButtonClickListener {
 }
         val intent = Intent(this@ReportActivity, ReportActivity::class.java)
         startActivity(intent)
-
-
-
-
 
         TODO("Not yet implemented")
     }

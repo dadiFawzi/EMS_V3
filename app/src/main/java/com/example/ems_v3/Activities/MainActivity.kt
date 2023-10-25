@@ -275,7 +275,9 @@ class MainActivity : AppCompatActivity() {
 
 
         homeButton =findViewById<View>(R.id.navigation_home)
+/*
         reportButton =findViewById<View>(R.id.navigation_report)
+*/
         settingButton =findViewById<View>(R.id.navigation_user)
         customerButton = findViewById<View>(R.id.navigation_client)
 
@@ -289,10 +291,10 @@ class MainActivity : AppCompatActivity() {
     val intent = Intent(this, MainActivity::class.java)
     startActivity(intent)
 }
-        reportButton.setOnClickListener{
+       /* reportButton.setOnClickListener{
             val intent = Intent(this, ReportActivity::class.java)
             startActivity(intent)
-        }
+        }*/
         customerButton.setOnClickListener{
             val intent = Intent(this, CustomerActivity::class.java)
             startActivity(intent)

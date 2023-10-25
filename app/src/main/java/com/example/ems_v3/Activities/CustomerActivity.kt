@@ -68,14 +68,14 @@ startActivity(intent)
                         return true
                     }
 
-                    R.id.navigation_report -> {
+                 /*   R.id.navigation_report -> {
                         // Start Button2Activity when Button 2 is clicked
                         val intent = Intent(this@CustomerActivity, ReportActivity::class.java)
                         startActivity(intent)
                         // Set the clicked item as selected
                         //   bottomNavigationView.selectedItemId = R.id.navigation_report
                         return true
-                    }
+                    }*/
 
                     R.id.navigation_user -> {
                         // Start Button2Activity when Button 2 is clicked

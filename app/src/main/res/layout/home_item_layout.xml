@@ -64,9 +64,10 @@
             android:id="@+id/buttonValidation"
             android:layout_width="40dp"
             android:layout_height="40dp"
+            android:scaleType="fitCenter"
             android:layout_marginBottom="15dp"
             android:background="#00FFFFFF"
-            android:src="@drawable/accept"
+            android:src="@drawable/print3"
           />
 
         <!-- Button for Editing expense -->
