@@ -4,10 +4,14 @@ import AuthInterceptor
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -24,7 +28,10 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.http.DELETE
 import retrofit2.http.GET
+import retrofit2.http.HTTP
+import retrofit2.http.Path
 
 
 class CustomerActivity : AppCompatActivity() {
@@ -37,10 +44,9 @@ class CustomerActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_customers_list)
          val addButton = findViewById< FloatingActionButton>(R.id.fab)
+         val searchEditText = findViewById<EditText>(R.id.search)
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
-
-
 
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.nav_view)
         bottomNavigationView.selectedItemId = R.id.navigation_client
@@ -48,7 +54,8 @@ class CustomerActivity : AppCompatActivity() {
          fun openModifyCustomerActivity(customer: Customer) {
             val intent = Intent(this, ModifyCustomerActivity::class.java)
              intent.putExtra("action","modification")
-            intent.putExtra("customerName",customer.name )
+             intent.putExtra("id",customer.id.toString())
+             intent.putExtra("customerName",customer.name )
              intent.putExtra("customerCity",customer.city )
              intent.putExtra("customerDistance",customer.distance )
              println("############################# intent")
@@ -108,7 +115,117 @@ startActivity(intent)
             intent.putExtra("action","add")
             startActivity(intent)
         }
+fun setCustomerAdapter(){
+    var filteredCustomers :List<Customer> = customerList ;
 
+
+    searchEditText.addTextChangedListener(object : TextWatcher {
+        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            // Not needed for this implementation
+        }
+
+        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            System.err.println("text chaged captured ")
+            // Filter the customerList based on the input text
+            val searchText = s.toString().trim().toLowerCase()
+            System.err.println("text chaged captured  search text : "+searchText)
+            val filteredCustomers = customerList.filter { customer ->
+                customer.name.toLowerCase().contains(searchText)
+
+
+            }
+
+        }
+
+        override fun afterTextChanged(p0: Editable?) {
+            val searchText = p0.toString().trim().toLowerCase()
+
+            if (searchText.isNotEmpty()) {
+                 filteredCustomers = customerList.filter { customer ->
+                    customer.name.toLowerCase().contains(searchText)
+                }
+            } else {
+                filteredCustomers = customerList ;
+            }
+
+            // Initialize and set up the RecyclerView and its adapter
+            customerAdapter = CustomerAdapter(filteredCustomers) { position, action ->
+                // Handle edit/delete button clicks here
+                if (action == CustomerAction.EDIT) {
+                    println("############################# Customer Activity")
+                    println(customerList[position].distance)
+                    println("***** position ***"+position)
+
+                    openModifyCustomerActivity(filteredCustomers[position])
+
+                } else if (action == CustomerAction.DELETE) {
+                    // Handle delete action
+                    // ...
+                }
+            }
+            recyclerView.adapter = customerAdapter
+
+
+        }
+
+    })
+
+    // Initialize and set up the RecyclerView and its adapter
+    customerAdapter = CustomerAdapter(filteredCustomers) { position, action ->
+        // Handle edit/delete button clicks here
+        if (action == CustomerAction.EDIT) {
+            println("############################# Customer Activity")
+            println(customerList[position].distance)
+            openModifyCustomerActivity(customerList[position])
+
+        } else if (action == CustomerAction.DELETE) {
+            val customerId = customerList[position].id // Get the customer's ID
+
+            val sharedPref = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+            val token = sharedPref.getString("jwt", null)
+            val okHttpClient = OkHttpClient.Builder()
+                .addInterceptor(token?.let { AuthInterceptor(it) }) // Pass the token here
+                .build()
+            val retrofit = Retrofit.Builder()
+                .baseUrl("http://192.168.1.17:8080") // Specify your base URL
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(okHttpClient)
+                .build()
+            val customerService = retrofit.create(CustomerService::class.java)
+            val call = customerService.deleteCustomer(customerId.toInt())
+
+            call.enqueue(object : Callback<Void> {
+                override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                    if (response.isSuccessful) {
+
+finish()
+                        val intent = Intent(this@CustomerActivity, CustomerActivity::class.java)
+                        startActivity(intent)
+
+
+
+                        // Customer deletion successful, you can update your UI if needed
+                    } else {
+                        // Handle deletion failure
+                    }
+                }
+
+                override fun onFailure(call: Call<Void>, t: Throwable) {
+                    // Handle network errors
+                }
+            })
+
+
+
+
+        }
+    }
+    recyclerView.adapter = customerAdapter
+
+
+
+
+}
 
         val sharedPref = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
         val token = sharedPref.getString("jwt", null)
@@ -122,6 +239,7 @@ startActivity(intent)
             .build()
         val customerService = retrofit.create(CustomerService::class.java)
         val call = customerService.getCustomers()
+
         call.enqueue(object : Callback<List<Customer>> {
             override fun onResponse(call: Call<List<Customer>>, response: Response<List<Customer>>) {
                 if (response.isSuccessful) {
@@ -132,25 +250,7 @@ startActivity(intent)
                         customerList = (customersResponse)
                         // The customerList now contains the retrieved customers
                         System.err.println("customerList : "+customerList);
-
-                        // Initialize and set up the RecyclerView and its adapter
-                        customerAdapter = CustomerAdapter(customerList) { position, action ->
-                            // Handle edit/delete button clicks here
-                            if (action == CustomerAction.EDIT) {
-                                // Handle edit action
-                                // ...
-                                println("############################# Customer Activity")
-                                println(customerList[position].distance)
-                                openModifyCustomerActivity(customerList[position])
-
-                            } else if (action == CustomerAction.DELETE) {
-                                // Handle delete action
-                                // ...
-                            }
-                        }
-                        recyclerView.adapter = customerAdapter
-
-
+                   setCustomerAdapter()
 
                     } else {
                         System.err.println("customerResponse  null");
@@ -182,7 +282,7 @@ startActivity(intent)
 // Adapter for the RecyclerView
 class CustomerAdapter(
     private val customers: List<Customer>,
-    private val onActionClickListener: (position: Int, action: CustomerAction) -> Unit
+    private var onActionClickListener: (position: Int, action: CustomerAction) -> Unit
 ) : RecyclerView.Adapter<CustomerAdapter.ViewHolder>() {
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -191,8 +291,6 @@ class CustomerAdapter(
         val distanceTextView: TextView = itemView.findViewById(R.id.distanceTextView)
         val editButton: ImageButton = itemView.findViewById(R.id.editButton)
         val deleteButton: ImageButton = itemView.findViewById(R.id.deleteButton)
-
-
 
     }
 
@@ -212,19 +310,16 @@ class CustomerAdapter(
 
         // Set click listeners for edit and delete buttons
         holder.editButton.setOnClickListener {
-
+            onActionClickListener(position, CustomerAction.EDIT)
         }
 
         holder.deleteButton.setOnClickListener {
             onActionClickListener(position, CustomerAction.DELETE)
         }
-
-
-
         holder.itemView.setOnClickListener {
             // Handle click on the customer item (You can show customer details here if needed)
             // For now, we'll open the ModifyCustomerActivity when clicking the customer item
-            onActionClickListener(position, CustomerAction.EDIT)
+            //onActionClickListener(position, CustomerAction.EDIT)
         }
 
     }
@@ -243,4 +338,7 @@ enum class CustomerAction {
 interface CustomerService {
     @GET("/api/client/client")
     fun getCustomers(): Call<List<Customer>>
+
+    @DELETE("/api/client/client/delete/{id}")
+    fun deleteCustomer(@Path("id") id: Int) : Call<Void>
 }

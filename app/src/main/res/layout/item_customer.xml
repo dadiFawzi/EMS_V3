@@ -1,54 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- item_customer.xml -->
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
+    android:orientation="vertical"
     android:padding="16dp">
 
-    <TextView
-        android:id="@+id/nameTextView"
-        android:layout_width="0dp"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        >
+
+        <TextView
+            android:id="@+id/nameTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="Name"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/cityTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="City"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/distanceTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="Distance"
+            android:textSize="16sp" />
+
+        <ImageButton
+            android:id="@+id/editButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackground"
+            android:padding="8dp"
+            android:src="@android:drawable/ic_menu_edit" />
+
+        <ImageButton
+            android:id="@+id/deleteButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:background="?attr/selectableItemBackground"
+            android:padding="8dp"
+            android:src="@android:drawable/ic_menu_delete" />
+    </LinearLayout>
+
+    <View
+        android:id="@+id/divider8"
+        android:layout_width="match_parent"
+        android:layout_height="4dp"
         android:layout_weight="1"
-        android:gravity="center"
-        android:textSize="18sp"
-        android:text="Name" />
-
-    <TextView
-        android:id="@+id/cityTextView"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:gravity="center"
-        android:textSize="16sp"
-        android:text="City" />
-
-    <TextView
-        android:id="@+id/distanceTextView"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:gravity="center"
-        android:textSize="16sp"
-        android:text="Distance" />
-
-    <ImageButton
-        android:id="@+id/editButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@android:drawable/ic_menu_edit"
-        android:background="?attr/selectableItemBackground"
-        android:padding="8dp" />
-
-    <ImageButton
-        android:id="@+id/deleteButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@android:drawable/ic_menu_delete"
-        android:background="?attr/selectableItemBackground"
-        android:padding="8dp"
-        android:layout_marginStart="8dp" />
-
+        android:background="?android:attr/listDivider"
+        android:backgroundTint="#2299FF"
+        android:outlineAmbientShadowColor="@color/teal_200" />
 </LinearLayout>
