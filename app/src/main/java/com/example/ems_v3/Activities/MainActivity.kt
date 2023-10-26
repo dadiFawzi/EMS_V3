@@ -58,13 +58,13 @@ class MainActivity : AppCompatActivity() {
             .build()
 
 // Thread to insert sample data into DB
-        Thread {
+      /*  Thread {
 
             val users = listOf(
-                User(username = "admin", email = "admin@example.com", password = "admin123", photo = "admin.jpg", role = Role.ADMIN),
-                User(username = "backoffice", email = "back@example.com", password = "back123", photo = "back.jpg", role = Role.BACKOFFICE),
-                User(username = "user1", email = "user1@example.com", password = "user123", photo = "user1.jpg", role = Role.USER),
-                User(username = "user2", email = "user2@example.com", password = "user456", photo = "user2.jpg", role = Role.USER)
+                User(username = "admin", email = "admin@example.com", password = "admin123", photo_link = "admin.jpg", jobTitle =  "ADMIN" , phone = "55852" ,  role = "ADMIN"),
+                User(username = "backoffice", email = "back@example.com", password = "back123", photo_link = "back.jpg",  jobTitle =  "ADMIN" , phone = "55852" ,  role = "ADMIN"),
+                User(username = "user1", email = "user1@example.com", password = "user123", photo_link = "admin.jpg", jobTitle =  "ADMIN" , phone = "55852" ,  role = "ADMIN"),
+                User(username = "user2", email = "user2@example.com", password = "user456", photo_link = "admin.jpg", jobTitle =  "ADMIN" , phone = "55852" ,  role = "ADMIN")
             )
             val sampleCustomers = listOf(
                 Customer(
@@ -185,7 +185,7 @@ class MainActivity : AppCompatActivity() {
             println(appDatabase.userDao().loadAllUsers().get(0).toString())
             println("################# get all user " )
         }.start()
-
+*/
 
         //adapter
         val recyclerView: RecyclerView = findViewById(R.id.recyclerViewExpenses)

@@ -1,5 +1,7 @@
 package com.example.ems_v3.Activities
 
+import AuthInterceptor
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -16,17 +18,27 @@ import com.example.ems_v3.model.Customer
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationBarView
+import okhttp3.OkHttpClient
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.http.GET
+
 
 class CustomerActivity : AppCompatActivity() {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var customerAdapter: CustomerAdapter
+    private var customerList: List<Customer> = mutableListOf() // Initialize an empty list
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_customers_list)
          val addButton = findViewById< FloatingActionButton>(R.id.fab)
         recyclerView = findViewById(R.id.recyclerView)
+        recyclerView.layoutManager = LinearLayoutManager(this)
 
 
 
@@ -98,42 +110,66 @@ startActivity(intent)
         }
 
 
-        // Sample data for customers (replace with your actual data)
-        val customers = listOf(
-            Customer("John Doe", "New York", 10.5),
-            Customer("Jane Smith", "Los Angeles", 8.2),
-            Customer("Robert Johnson", "Chicago", 12.7),
-            Customer("John Doe", "New York", 10.5),
-        Customer("Jane Smith", "Los Angeles", 8.2),
-        Customer("Robert Johnson", "Chicago", 12.7),
-        Customer("John Doe", "New York", 10.5),
-        Customer("Jane Smith", "Los Angeles", 8.2),
-        Customer("Robert Johnson", "Chicago", 12.7),
-        Customer("John Doe", "New York", 10.5),
-        Customer("Jane Smith", "Los Angeles", 8.2),
-        Customer("Robert Johnson", "Chicago", 12.7)
-            // Add more customers as needed
-        )
+        val sharedPref = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+        val token = sharedPref.getString("jwt", null)
+        val okHttpClient = OkHttpClient.Builder()
+            .addInterceptor(token?.let { AuthInterceptor(it) })
+                   .build()
+        val retrofit = Retrofit.Builder()
+            .baseUrl("http://192.168.1.17:8080") // Specify your base URL
+            .addConverterFactory(GsonConverterFactory.create())
+            .client(okHttpClient)
+            .build()
+        val customerService = retrofit.create(CustomerService::class.java)
+        val call = customerService.getCustomers()
+        call.enqueue(object : Callback<List<Customer>> {
+            override fun onResponse(call: Call<List<Customer>>, response: Response<List<Customer>>) {
+                if (response.isSuccessful) {
+                    System.err.println("response is Successful");
+                     var customersResponse =  response.body()
+                    if (customersResponse != null) {
+                        System.err.println("customerResponse not null");
+                        customerList = (customersResponse)
+                        // The customerList now contains the retrieved customers
+                        System.err.println("customerList : "+customerList);
 
-        // Initialize and set up the RecyclerView and its adapter
-        customerAdapter = CustomerAdapter(customers) { position, action ->
-            // Handle edit/delete button clicks here
-            if (action == CustomerAction.EDIT) {
-                // Handle edit action
-                // ...
+                        // Initialize and set up the RecyclerView and its adapter
+                        customerAdapter = CustomerAdapter(customerList) { position, action ->
+                            // Handle edit/delete button clicks here
+                            if (action == CustomerAction.EDIT) {
+                                // Handle edit action
+                                // ...
+                                println("############################# Customer Activity")
+                                println(customerList[position].distance)
+                                openModifyCustomerActivity(customerList[position])
 
-                println("############################# Customer Activity")
-                println(customers[position].distance)
-                openModifyCustomerActivity(customers[position])
+                            } else if (action == CustomerAction.DELETE) {
+                                // Handle delete action
+                                // ...
+                            }
+                        }
+                        recyclerView.adapter = customerAdapter
 
-            } else if (action == CustomerAction.DELETE) {
-                // Handle delete action
-                // ...
+
+
+                    } else {
+                        System.err.println("customerResponse  null");
+                        // Handle the case where the response is null
+                    }
+                } else {
+                    System.err.println("response is failed");
+
+                    // Handle the case where the request was not successful (e.g., error response)
+                }
             }
-        }
+            override fun onFailure(call: Call<List<Customer>>, t: Throwable) {
+                // Handle network errors
+            }
+        })
 
-        recyclerView.layoutManager = LinearLayoutManager(this)
-        recyclerView.adapter = customerAdapter
+
+
+
     }
 
     override fun onRestart() {
@@ -143,17 +179,7 @@ startActivity(intent)
     }
 }
 
-
-
-
-
-
-
 // Adapter for the RecyclerView
-
-
-
-
 class CustomerAdapter(
     private val customers: List<Customer>,
     private val onActionClickListener: (position: Int, action: CustomerAction) -> Unit
@@ -211,4 +237,10 @@ class CustomerAdapter(
 // Enum class for customer actions
 enum class CustomerAction {
     EDIT, DELETE
+}
+
+
+interface CustomerService {
+    @GET("/api/client/client")
+    fun getCustomers(): Call<List<Customer>>
 }

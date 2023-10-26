@@ -20,7 +20,7 @@ interface UserDao {
 
     @Query("SELECT * FROM user_table")
     fun loadAllUsers(): Array<User>
-    @Query("SELECT * FROM user_table WHERE id = :userId")
+    @Query("SELECT * FROM user_table WHERE user_id = :userId")
      fun getUserById(userId: Long): User?
     @Update
      fun updateUser(user: User)

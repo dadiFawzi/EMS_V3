@@ -12,19 +12,27 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:textSize="18sp" />
+        android:gravity="center"
+        android:textSize="18sp"
+        android:text="Name" />
 
     <TextView
         android:id="@+id/cityTextView"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:textSize="16sp" />
+        android:layout_weight="1"
+        android:gravity="center"
+        android:textSize="16sp"
+        android:text="City" />
 
     <TextView
         android:id="@+id/distanceTextView"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:textSize="16sp" />
+        android:layout_weight="1"
+        android:gravity="center"
+        android:textSize="16sp"
+        android:text="Distance" />
 
     <ImageButton
         android:id="@+id/editButton"

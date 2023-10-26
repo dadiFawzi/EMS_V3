@@ -160,6 +160,7 @@ fun EditText.afterTextChanged(afterTextChanged: (String) -> Unit) {
 
 package com.example.ems_v3.Activities
 
+import AuthInterceptor
 import android.Manifest
 import android.content.Context
 import android.content.Intent
@@ -172,6 +173,8 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.example.ems_v3.R
+import com.example.ems_v3.model.Customer
+import com.example.ems_v3.model.User
 import com.google.gson.GsonBuilder
 import okhttp3.OkHttpClient
 import retrofit2.Call
@@ -180,11 +183,12 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.Body
+import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
+import retrofit2.http.Path
 
 
-data class AuthResponse(val jwt: String)
 data class LoginRequest(val username: String, val password: String)
 
 interface AuthService {
@@ -195,19 +199,6 @@ interface AuthService {
 
 class LoginActivity : AppCompatActivity() {
 
-    val interceptor = AuthInterceptor()
-
-    val okHttpClient = OkHttpClient.Builder()
-        .addInterceptor(interceptor)
-        .build()
-
-
-
-
-  /*  private val retrofit = Retrofit.Builder()
-        .baseUrl("http://192.168.1.17:8080")
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()*/
 
 
     private val mPermissions = arrayOf(
@@ -236,65 +227,19 @@ class LoginActivity : AppCompatActivity() {
             System.err.println(" ######### password ##############"+password)
             // Create the basic authentication string
 
-        /*    val loginRequest = LoginRequest(username, password)
-            val gson = Gson() // Gson is used for JSON serialization
 
-// Convert the loginRequest to a JSON string
-            val requestBody = RequestBody.create(MediaType.parse("application/json"), gson.toJson(loginRequest))
-// Create the basic authentication string
-            val basicAuth = "Bearer " + Credentials.basic(username, password)
-// Make the authentication request
-            val call = authService.authenticate(basicAuth, requestBody)
-            */
             val credentials = "$username:$password"
             val basicAuth = "Basic " + Base64.encodeToString(credentials.toByteArray(), Base64.NO_WRAP)
             val gson = GsonBuilder()
                 .setLenient()
                 .create()
-
             val retrofit = Retrofit.Builder()
                 .baseUrl("http://192.168.1.17:8080")
                 .addConverterFactory(GsonConverterFactory.create(gson))
-                .client(okHttpClient) // Set the OkHttpClient with the interceptor
                 .build()
-
-             val authService = retrofit.create(AuthService::class.java)
-
+            val authService = retrofit.create(AuthService::class.java)
             val loginRequest = LoginRequest(username, password)
-
             val call = authService.login(basicAuth, loginRequest)
-
-            /*call.enqueue(object : Callback<String> {
-                override fun onResponse(call: Call<String>, response: Response<String>) {
-                    if (response.isSuccessful) {
-                        // Successful response
-                        val authResponse = response.body()
-                       *//* val jwt = authResponse?.jwt // Extract JWT from the response*//*
-                        val jwt = authResponse ?: "DefaultJWTValue"
-
-                        // Store the JWT securely, for example, in SharedPreferences
-                        val sharedPref = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
-                        with(sharedPref.edit()) {
-                            putString("jwt", jwt)
-                            apply()
-                        }
-                        // Redirect to the next screen or perform other actions
-                        logDebug("Authentication successful")
-                    } else {
-                        // Unsuccessful response (e.g., authentication failed)
-                        val errorBody = response.errorBody()?.string() ?: ""
-                        logError("Authentication failed. Response code: ${response.code()}, Error Body: $errorBody")
-
-                        // Handle authentication failure, e.g., incorrect credentials or server error
-                        showErrorToast("Authentication failed. Please check your credentials.")
-                    }
-                }
-                override fun onFailure(call: Call<String>, t: Throwable) {
-                    // Network error
-                    logError("Network error: ${t.message}")
-                    showErrorToast("Network error. Please check your internet connection.")                }
-            })*/
-
             call.enqueue(object : Callback<String> {
                 override fun onResponse(call: Call<String>, response: Response<String>) {
                     if (response.isSuccessful) {
@@ -310,6 +255,13 @@ class LoginActivity : AppCompatActivity() {
                                 putString("jwt", jwt)
                                 apply()
                             }
+
+                            getUser(username) ;
+                            val sharedPref2 = getSharedPreferences("User", Context.MODE_PRIVATE)
+                            val user = sharedPref2.getString("jwt", null)
+
+                            System.err.println("user get from API : "+user) ;
+
 
                             // Open MainActivity or perform other actions
                             val intent = Intent(this@LoginActivity, MainActivity::class.java)
@@ -380,6 +332,65 @@ class LoginActivity : AppCompatActivity() {
         }
         return true
     }
+
+    private fun getUser(username: String){
+
+        val sharedPref = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+        val token = sharedPref.getString("jwt", null)
+        val okHttpClient = OkHttpClient.Builder()
+            .addInterceptor(token?.let { AuthInterceptor(it) })
+            .build()
+        val retrofit = Retrofit.Builder()
+            .baseUrl("http://192.168.1.17:8080") // Specify your base URL
+            .addConverterFactory(GsonConverterFactory.create())
+            .client(okHttpClient)
+            .build()
+        val customerService = retrofit.create(UserService::class.java)
+        val call = customerService.getuser(username =username )
+
+        call.enqueue(object : Callback<User> {
+            override fun onResponse(call: Call<User>, response: Response<User>) {
+                if (response.isSuccessful) {
+                    System.err.println("response is Successful"+response.body());
+                    var userResponse =  response.body()
+                    if (userResponse!= null) {
+                        val jwt = userResponse ?: "DefaultJWTValue"
+
+                        // Store the JWT securely, for example, in SharedPreferences
+                        val sharedPref = getSharedPreferences("User", Context.MODE_PRIVATE)
+                        with(sharedPref.edit()) {
+                            putString("jwt", jwt.toString())
+                            apply()
+                        }
+
+
+
+                    } else {
+                        System.err.println("customerResponse  null");
+                        // Handle the case where the response is null
+                    }
+                } else {
+                    System.err.println("response is failed");
+
+                    // Handle the case where the request was not successful (e.g., error response)
+                }
+            }
+            override fun onFailure(call: Call<User>, t: Throwable) {
+                // Handle network errors
+            }
+        })
+
+
+    }
+
 }
+
+interface UserService {
+    @GET("/api/setting/user/username/{username}")
+    fun getuser(@Path("username") username: String): Call<User>
+
+}
+
+
 
 
