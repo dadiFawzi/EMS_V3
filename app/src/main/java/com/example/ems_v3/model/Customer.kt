@@ -5,9 +5,7 @@ import androidx.room.Ignore
 import androidx.room.PrimaryKey
 
 
-@Entity(tableName = "customer_table")
-data class Customer(
-    @PrimaryKey(autoGenerate = true)
+ class Customer(
     val id  : Long = 0,
     val name: String,
     val city: String,

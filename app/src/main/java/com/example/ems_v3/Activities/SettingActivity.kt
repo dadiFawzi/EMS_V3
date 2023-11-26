@@ -5,13 +5,8 @@ import retrofit2.Call
 import retrofit2.http.GET
 
 
-
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
@@ -21,16 +16,15 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
 import com.bumptech.glide.Glide
 import com.example.ems_v3.R
-import com.example.ems_v3.database.AppDatabase
 import com.example.ems_v3.model.User
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationBarView
+import com.google.gson.Gson
 import okhttp3.OkHttpClient
+import org.json.JSONObject
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
@@ -38,14 +32,11 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.Body
 import retrofit2.http.POST
 import retrofit2.http.Path
-import java.io.ByteArrayOutputStream
 import java.io.File
-import java.io.FileOutputStream
-import kotlin.concurrent.thread
 
 interface SettingService {
     @GET("/api/setting/user/{id}")
-    fun getuser(@Path("id") id: Int): Call<User>
+    fun getuser(@Path("id") id: Long?): Call<User>
 
     @POST("/api/setting/add")
     fun saveUser(@Body user: User): Call<User>
@@ -59,7 +50,6 @@ class SettingActivity : AppCompatActivity() {
     private lateinit var profileImageView: ImageView
     private  lateinit var  modifypicturebutton : FloatingActionButton
     private val PICK_IMAGE_REQUEST = 1 // Request code for gallery picker
-    private lateinit var appDatabase: AppDatabase // Initialize your database
     private  lateinit var  targetFile : File
     private  lateinit var user: User ;
 
@@ -136,7 +126,6 @@ class SettingActivity : AppCompatActivity() {
                 return false
             }
         })
-        appDatabase = AppDatabase.getInstance(this)
         modifypicturebutton = findViewById(R.id.fab)
         profileImageView = findViewById(R.id.avatarImageView)
         modifypicturebutton.setOnClickListener{
@@ -151,6 +140,9 @@ class SettingActivity : AppCompatActivity() {
 
         val sharedPref = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
         val token = sharedPref.getString("jwt", null)
+
+
+
         val okHttpClient = OkHttpClient.Builder()
             .addInterceptor(token?.let { AuthInterceptor(it) }) // Pass the token here
             .build()
@@ -160,11 +152,14 @@ class SettingActivity : AppCompatActivity() {
             .client(okHttpClient)
             .build()
         val settingService = retrofit.create(SettingService::class.java)
-        //
-        val userIdToFetch = 1 // Replace with the actual user ID
+
+        val sharedPref2 = getSharedPreferences("user", Context.MODE_PRIVATE)
+        var userstring = sharedPref2.getString("user_data", null)
+        val userIdToFetch = userstring // id of current user
+
 
         // Make the API request to get the user by ID
-        val call = settingService.getuser(userIdToFetch)
+        val call = settingService.getuser(userIdToFetch?.toLong())
         call.enqueue(object : Callback<User> {
             override fun onResponse(call: Call<User>, response: Response<User>) {
                 if (response.isSuccessful) {
@@ -207,7 +202,17 @@ class SettingActivity : AppCompatActivity() {
 
     }
 
-    private fun updateUserOnServer(updatedUser: User) {
+    fun getUserFromSharedPreferences(): User? {
+        val sharedPreferences = getSharedPreferences("user", Context.MODE_PRIVATE)
+        val userJson = sharedPreferences.getString("user_data", null)
+
+        return if (userJson != null) {
+            val gson = Gson()
+            gson.fromJson(userJson, User::class.java)
+        } else {
+            null
+        }
+    }    private fun updateUserOnServer(updatedUser: User) {
         System.err.println("update user fun start ")
 
         val sharedPref = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)

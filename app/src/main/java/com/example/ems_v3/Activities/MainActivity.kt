@@ -1,46 +1,55 @@
 package com.example.ems_v3.Activities
 
+import AuthInterceptor
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.TypedValue
 import android.view.View
-import android.view.ViewGroup
 import android.widget.Button
 import android.widget.HorizontalScrollView
 import android.widget.LinearLayout
-import android.widget.ScrollView
-import android.widget.TextView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.marginRight
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.room.Room
+import com.example.ems_v3.Main.ExpenseAdapter
 import com.example.ems_v3.R
 import com.example.ems_v3.Main.ExpenseItem
-import com.example.ems_v3.Main.HomeAdapter
-import com.example.ems_v3.database.AppDatabase
 import com.example.ems_v3.databinding.ActivityMainBinding
-import com.example.ems_v3.model.Customer
-import com.example.ems_v3.model.Expense
-import com.example.ems_v3.model.ExpenseType
-import com.example.ems_v3.model.Role
-import com.example.ems_v3.model.User
-import com.example.ems_v3.model.mission.Mission
+import com.example.ems_v3.model.HomeData
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import okhttp3.OkHttpClient
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.http.DELETE
+import retrofit2.http.GET
+import retrofit2.http.Path
 import java.util.Calendar
 import java.util.List
 
+interface HomeService {
+    @GET("/api/home/homedata")
+    fun getdata(): Call<HomeData>
+
+    @GET("/api/home/homedata/{id}")
+    fun getuserdata(@Path("id") id: Long): Call<List<HomeData>>
+
+
+    @DELETE("/api/client/client/delete/{id}")
+    fun deleteCustomer(@Path("id") id: Int) : Call<Void>
+}
 class MainActivity : AppCompatActivity() {
 
-
-
-
+    lateinit var listExpenseItem :List<ExpenseItem>
     private lateinit var addButton: FloatingActionButton
-    private lateinit var homeButton:View
-    private lateinit var reportButton:View
-    private lateinit var settingButton:View
-    private lateinit var customerButton:View
+    private lateinit var homeButton: View
+    private lateinit var reportButton: View
+    private lateinit var settingButton: View
+    private lateinit var customerButton: View
+     var missions: Any ={""}
 
 
     private lateinit var binding: ActivityMainBinding
@@ -50,154 +59,30 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         addButton = findViewById(R.id.fab)
-       val navView: BottomNavigationView = binding.navView
+        val navView: BottomNavigationView = binding.navView
 
-        //create database
-        var appDatabase: AppDatabase =
-            Room.databaseBuilder(applicationContext, AppDatabase::class.java, "EMS")
-            .build()
 
-// Thread to insert sample data into DB
-      /*  Thread {
-
-            val users = listOf(
-                User(username = "admin", email = "admin@example.com", password = "admin123", photo_link = "admin.jpg", jobTitle =  "ADMIN" , phone = "55852" ,  role = "ADMIN"),
-                User(username = "backoffice", email = "back@example.com", password = "back123", photo_link = "back.jpg",  jobTitle =  "ADMIN" , phone = "55852" ,  role = "ADMIN"),
-                User(username = "user1", email = "user1@example.com", password = "user123", photo_link = "admin.jpg", jobTitle =  "ADMIN" , phone = "55852" ,  role = "ADMIN"),
-                User(username = "user2", email = "user2@example.com", password = "user456", photo_link = "admin.jpg", jobTitle =  "ADMIN" , phone = "55852" ,  role = "ADMIN")
-            )
-            val sampleCustomers = listOf(
-                Customer(
-                    name = "John Smith",
-                    city = "New York",
-                    distance = 10.5
-                ),
-                Customer(
-                    name = "Alice Johnson",
-                    city = "Los Angeles",
-                    distance = 8.2
-                ),
-                Customer(
-                    name = "Robert Brown",
-                    city = "Chicago",
-                    distance = 5.0
-                ),
-                Customer(
-                    name = "Emily Davis",
-                    city = "Houston",
-                    distance = 12.7
-                ),
-                Customer(
-                    name = "Michael Wilson",
-                    city = "Miami",
-                    distance = 6.8
-                )
-            )
-            val sampleExpenses = listOf(
-                Expense(
-                    expenseType = ExpenseType.restaurent,
-                    ammount = 25.0f,
-                    comment = "Lunch at the restaurant"
-                ),
-                Expense(
-                    expenseType = ExpenseType.taxi,
-                    ammount = 10.5f,
-                    comment = "Bus fare"
-                ),
-                Expense(
-                    expenseType = ExpenseType.other,
-                    ammount = 15.75f,
-                    comment = "Movie night"
-                ),
-                Expense(
-                    expenseType = ExpenseType.other,
-                    ammount = 50.0f,
-                    comment = "Weekly grocery shopping"
-                ),
-                Expense(
-                    expenseType = ExpenseType.other,
-                    ammount = 75.0f,
-                    comment = "Electricity bill"
-                ),
-                Expense(
-                    expenseType = ExpenseType.rentCar,
-                    ammount = 200.0f,
-                    comment = "Weekend getaway"
-                ),
-                Expense(
-                    expenseType = ExpenseType.other,
-                    ammount = 30.0f,
-                    comment = "Doctor's visit"
-                ),
-                Expense(
-                    expenseType = ExpenseType.hotel,
-                    ammount = 60.0f,
-                    comment = "New pair of shoes"
-                ),
-                Expense(
-                    expenseType = ExpenseType.fuel,
-                    ammount = 800.0f,
-                    comment = "Monthly rent"
-                ),
-                Expense(
-                    expenseType = ExpenseType.fuel,
-                    ammount = 50.0f,
-                    comment = "Miscellaneous expenses"
-                )
-            )
-            val sampleMissions = listOf(
-                Mission(
-                    missionTitle = "Client Meeting",
-                    missionComment = "Discuss project requirements with the client.",
-                    idUser = 1,
-                    idExpense = 3
-                ),
-                Mission(
-                    missionTitle = "Market Research",
-                    missionComment = "Conduct market research for new product launch.",
-                    idUser = 2,
-                    idExpense = 2
-                ),
-                Mission(
-                    missionTitle = "Training Session",
-                    missionComment = "Lead a training session for new employees.",
-                    idUser = 3,
-                    idExpense = 1
-                ),
-                Mission(
-                    missionTitle = "Product Presentation",
-                    missionComment = "Present our latest product to potential investors.",
-                    idUser = 1,
-                    idExpense = 4
-                ),
-                Mission(
-                    missionTitle = "Team Building",
-                    missionComment = "Organize team building activities for the department.",
-                    idUser = 4,
-                    idExpense = 5
-                )
-            )
-            appDatabase.userDao().insertAll(users)
-            appDatabase.customerDao().insertAllCustomer(sampleCustomers)
-            appDatabase.expenseDao().insertAllExpense(sampleExpenses)
-            appDatabase.missionDao().insertAll(sampleMissions)
-
-            println(appDatabase.userDao().loadAllUsers().get(0).toString())
-            println("################# get all user " )
-        }.start()
-*/
 
         //adapter
         val recyclerView: RecyclerView = findViewById(R.id.recyclerViewExpenses)
         val scrollView = findViewById<HorizontalScrollView>(R.id.monthsScrollView)
+        val sharedPref2 = getSharedPreferences("user", Context.MODE_PRIVATE)
+        var userstring = sharedPref2.getString("user_data", null)
+        val userIdToFetch = userstring // id of current user
 
-        val dataList = getListOfItems() // Update this function to add more items
-        val adapter = HomeAdapter(dataList as List<ExpenseItem>)
-        recyclerView.adapter = adapter
+
+        //     val dataList = getListOfItems() // Update this function to add more items
+        //val adapter = HomeAdapter(listExpenseItem)
+      //  recyclerView.adapter = adapter
+        if (userIdToFetch != null) {
+            displayExpenses(userIdToFetch.toLong(),recyclerView)
+        }
+        else{
+            System.err.println("user id is nulll")
+        }
+
+
         recyclerView.layoutManager = LinearLayoutManager(this)
-
-
-
 
 
         // to display months in the top of the main view
@@ -209,8 +94,8 @@ class MainActivity : AppCompatActivity() {
         // Create TextView elements for each month and add to the LinearLayout
         var m = 0
         for (month in monthsArray) {
-              m++
-            val  textViewMonth = Button(this)
+            m++
+            val textViewMonth = Button(this)
 
             textViewMonth.text = month
 
@@ -220,13 +105,12 @@ class MainActivity : AppCompatActivity() {
             textViewMonth.isClickable = true
             textViewMonth.isFocusable = true
             textViewMonth.setBackgroundResource(R.drawable.month_button)
-                        monthsContainer.addView(textViewMonth)
-
+            monthsContainer.addView(textViewMonth)
 
 
             //set default month  is current month
             val calendar = Calendar.getInstance()
-            val currentMonth = calendar.get(Calendar.MONTH)+1
+            val currentMonth = calendar.get(Calendar.MONTH) + 1
             if (currentMonth == m) {
                 textViewMonth.isSelected = true
                 //  v.setBackgroundColor(resources.getColor(R.color.selected_month))
@@ -240,8 +124,7 @@ class MainActivity : AppCompatActivity() {
             val textViewMonth = monthsContainer.getChildAt(i) as Button
 
 
-            textViewMonth.setOnClickListener {
-                    v ->
+            textViewMonth.setOnClickListener { v ->
                 // Deselect all items
                 for (j in 0 until monthsContainer.childCount) {
                     monthsContainer.getChildAt(j).isSelected = false
@@ -255,11 +138,8 @@ class MainActivity : AppCompatActivity() {
                 val position = monthsContainer.childCount
 
                 // Scroll the ScrollView to the target position
-              //  scrollView.smoothScrollTo( (i-1)*textViewMonth.width,0)
-                scrollView.smoothScrollTo( (i-1)*textViewMonth.width,0)
-
-
-
+                //  scrollView.smoothScrollTo( (i-1)*textViewMonth.width,0)
+                scrollView.smoothScrollTo((i - 1) * textViewMonth.width, 0)
 
 
                 // Perform actions based on the selected item if needed
@@ -274,32 +154,30 @@ class MainActivity : AppCompatActivity() {
 
 
 
-        homeButton =findViewById<View>(R.id.navigation_home)
-/*
+        homeButton = findViewById<View>(R.id.navigation_home)
+        /*
         reportButton =findViewById<View>(R.id.navigation_report)
 */
-        settingButton =findViewById<View>(R.id.navigation_user)
+        settingButton = findViewById<View>(R.id.navigation_user)
         customerButton = findViewById<View>(R.id.navigation_client)
-
-
-        addButton.setOnClickListener{
-        val intent = Intent(this, AddActivity::class.java)
-            navView.selectedItemId=0 ;
-        startActivity(intent)
-    }
-        homeButton.setOnClickListener{
-    val intent = Intent(this, MainActivity::class.java)
-    startActivity(intent)
-}
-       /* reportButton.setOnClickListener{
+        addButton.setOnClickListener {
+            val intent = Intent(this, AddActivity::class.java)
+            navView.selectedItemId = 0;
+            startActivity(intent)
+        }
+        homeButton.setOnClickListener {
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
+        }
+        /* reportButton.setOnClickListener{
             val intent = Intent(this, ReportActivity::class.java)
             startActivity(intent)
         }*/
-        customerButton.setOnClickListener{
+        customerButton.setOnClickListener {
             val intent = Intent(this, CustomerActivity::class.java)
             startActivity(intent)
         }
-        settingButton.setOnClickListener{
+        settingButton.setOnClickListener {
             val intent = Intent(this, SettingActivity::class.java)
             startActivity(intent)
         }
@@ -311,45 +189,66 @@ class MainActivity : AppCompatActivity() {
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.nav_view)
         bottomNavigationView.selectedItemId = R.id.navigation_home
     }
-    private fun getListOfItems(): Any {
-        val expenses1 = listOf(
-            Pair("Expense Type 3", 70.0),
-            Pair("Expense Type 4", 8.0),
-            Pair("Expense Type 3", 70.0),
-            Pair("Expense Type 4", 8.0)
-        )
 
-        val expenses2 = listOf(
-            Pair("Expense Type 3", 70.0),
-            Pair("Expense Type 4", 8.0),
-            Pair("Expense Type 3", 70.0),
-            Pair("Expense Type 4", 8.0)
-        )
-        val expenses3 = listOf(
-            Pair("Expense Type 3", 70.0),
-            Pair("Expense Type 4", 8.0),
-            Pair("Expense Type 3", 70.0),
-            Pair("Expense Type 4", 8.0)
-        )
-        val expenses4 = listOf(
-            Pair("Expense Type 3", 70.0),
-            Pair("Expense Type 4", 8.0),
-            Pair("Expense Type 3", 70.0),
-            Pair("Expense Type 4", 8.0)
-        )
+fun  displayExpenses(userId :Long  , recyclerView :RecyclerView){
 
-// Initialize the list of ExpenseItem
-        val expenseItem: kotlin.collections.List<ExpenseItem> = listOf(
-            ExpenseItem("2023-07-24", "Business Trip 1", 125.30,"Customer A", expenses1),
-            ExpenseItem("2023-07-25", "Business Trip 2", 85.40,"Customer B", expenses2),
-            ExpenseItem("2023-07-24", "Business Trip 3", 125.30,"Customer A", expenses3),
-            ExpenseItem("2023-07-25", "Business Trip 4", 85.40,"Customer B", expenses4)
+    val sharedPref = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+    val token = sharedPref.getString("jwt", null)
+    val okHttpClient = OkHttpClient.Builder()
+        .addInterceptor(token?.let { AuthInterceptor(it) }) // Pass the token here
+        .build()
+    val retrofit = Retrofit.Builder()
+        .baseUrl("http://192.168.1.17:8080")
+        .addConverterFactory(GsonConverterFactory.create())
+        .client(okHttpClient)
+        .build()
+
+    val apiService = retrofit.create(HomeService::class.java)
+    val call = apiService.getuserdata(userId)
+
+    call.enqueue(object : Callback<List<HomeData>> {
+        override fun onResponse(call: Call<List<HomeData>>, response: Response<List<HomeData>>) {
+            if (response.isSuccessful) {
+                val homeDataList = response.body()
+                if (homeDataList != null && homeDataList.isNotEmpty()) {
+                    val homeData = homeDataList[0]
+
+                    val expenseItem = ExpenseItem(
+                        expenseDate = homeData.mission.date.toString(), // Adjust this based on your date format
+                        missionTitle = homeData.mission.mission_title,
+                        expenseAmount = homeData.expense.amount,
+                        customerName = homeData.client.name,
+                        expenseList = listOf(Pair(homeData.expenseType.name, homeData.expense.amount))
+                    )
+
+                    val expenseAdapter = ExpenseAdapter(listOf(expenseItem))
+                    recyclerView.adapter = expenseAdapter
+                    System.err.println("home data is successful 1")
+                }else {
+                    System.err.println("home data is error 0")
+                }
+            } else {
+                val errorBody = response.errorBody()?.string()
+                System.err.println("Error response code: ${response.code()}, error body: $errorBody")
+                System.err.println("home data is error 1")
+                // Handle error
+            }
+        }
+
+        override fun onFailure(call: Call<List<HomeData>>, t: Throwable) {
+            System.err.println("home data is error 2: ${t.message}")
+            t.printStackTrace()
+
+            // Handle failure
+        }
+    })
+
+}
 
 
-        )
 
-
-        return expenseItem // Two example items in the list
 
     }
-}
+
+
+

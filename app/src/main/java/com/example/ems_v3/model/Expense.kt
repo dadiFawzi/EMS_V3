@@ -4,14 +4,12 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 
-@Entity(tableName ="expense_table")
-data class Expense (
+ class Expense (
 
-    @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
-    val expenseType : ExpenseType ,
-    val ammount : Float,
+    val amount : Double,
     val comment : String,
+    val invoice_link:String
 
     )
 /*

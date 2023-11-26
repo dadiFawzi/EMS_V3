@@ -175,6 +175,7 @@ import androidx.core.app.ActivityCompat
 import com.example.ems_v3.R
 import com.example.ems_v3.model.Customer
 import com.example.ems_v3.model.User
+import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import okhttp3.OkHttpClient
 import retrofit2.Call
@@ -192,8 +193,14 @@ import retrofit2.http.Path
 data class LoginRequest(val username: String, val password: String)
 
 interface AuthService {
-    @POST("/api/auth/")
+    @POST("/api/auth")
     fun login(@Header("Authorization") basicAuth: String, @Body loginRequest: LoginRequest): Call<String>
+
+}
+
+interface UserService {
+    @GET("/api/setting/user/username/{username}")
+    fun getuser(@Path("username") username: String): Call<User>
 
 }
 
@@ -354,14 +361,31 @@ class LoginActivity : AppCompatActivity() {
                     System.err.println("response is Successful"+response.body());
                     var userResponse =  response.body()
                     if (userResponse!= null) {
-                        val jwt = userResponse ?: "DefaultJWTValue"
+                        val userJson :User = userResponse
+
+
+
 
                         // Store the JWT securely, for example, in SharedPreferences
-                        val sharedPref = getSharedPreferences("User", Context.MODE_PRIVATE)
+                       /*
+                        val sharedPref = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+                            with(sharedPref.edit()) {
+                                putString("jwt", jwt)
+                                apply()
+                            }
+
+
+                       val sharedPref = getSharedPreferences("User", Context.MODE_PRIVATE)
                         with(sharedPref.edit()) {
                             putString("jwt", jwt.toString())
-                            apply()
-                        }
+                            apply()*/
+
+                        val sharedPreferences2 = getSharedPreferences("user", Context.MODE_PRIVATE)
+                       with( sharedPreferences2.edit()) {
+                           putString("user_data", userJson.user_id.toString())
+                           apply()
+
+                       }
 
 
 
@@ -385,11 +409,7 @@ class LoginActivity : AppCompatActivity() {
 
 }
 
-interface UserService {
-    @GET("/api/setting/user/username/{username}")
-    fun getuser(@Path("username") username: String): Call<User>
 
-}
 
 
 

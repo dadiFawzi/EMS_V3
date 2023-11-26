@@ -37,12 +37,7 @@ class HomeAdapter(private val dataList:List<ExpenseItem>) :
         // Bind data to views here
         val currentItem = dataList[position]
 
-
-        // Bind data to views here
-      /*  holder.textViewExpenseDate.text = "11-04-2023"*//*expenseItem.expenseDate*//*
-        holder.textViewMissionTitle.text = "installation "*//*expenseItem.missionTitle*//*
-        holder.textViewCustomerName.text = "CHO "*//*expenseItem.customerName*//*
-*/
+        
         holder.textViewMissionTitle.text = currentItem.missionTitle ;
         holder.textViewCustomerName.text = currentItem.customerName ;
         holder.textViewExpenseDate.text = currentItem.expenseDate ;

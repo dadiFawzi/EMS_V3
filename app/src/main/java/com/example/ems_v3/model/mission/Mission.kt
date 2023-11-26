@@ -6,12 +6,10 @@ import androidx.room.PrimaryKey
 import java.util.Date
 
 
-@Entity(tableName = "mission_table")
 data  class Mission (
-    @PrimaryKey(autoGenerate = true)
     val id : Long = 0 ,
-    val missionTitle : String ,
- //   val date: Date ,
+    val mission_title : String ,
+    val date: Date ,
     val missionComment : String,
     val idUser : Long ,
     val idExpense : Long ,
